@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,11 +32,13 @@ public class Country {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ExistsByCountryName 
+    @NotNull(message = "El nombre del pais es requerido")
     @Column(length = 50, nullable = false)
     private String name;
 
     @Embedded
-    Audit audit = new Audit();
+    Audit audit = new Audit()
 
     @OneToMany(mappedBy = "country",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonManagedReference("country-region")
