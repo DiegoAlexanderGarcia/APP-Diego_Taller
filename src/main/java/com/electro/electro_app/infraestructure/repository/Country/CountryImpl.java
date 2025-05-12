@@ -50,4 +50,10 @@ public class CountryImpl implements ICountryService {
         });
         return Optional.empty();
     }
+
+    @Override
+    public boolean existsByCountryname(String countryname) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'existsByCountryname'");
+    }
 }

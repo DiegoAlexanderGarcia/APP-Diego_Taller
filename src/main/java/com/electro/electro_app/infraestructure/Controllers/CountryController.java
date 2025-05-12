@@ -1,11 +1,13 @@
 package com.electro.electro_app.infraestructure.Controllers;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.electro.electro_app.application.service.ICountryService;
 import com.electro.electro_app.domain.entities.Country;
 import com.electro.electro_app.infraestructure.Error.models.exception.EntityNotFoundException;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/country")
@@ -42,6 +46,16 @@ public class CountryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(countryService.save(country));
     }
 
+    @PostMapping
+    public ResponseEntity create(@Valid @RequestBody Country country, BindingResult result) {
+        if (result.hasErrors()) {
+            return Validation(result);
+        }
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(countryService.save(country));
+    }
+    
+
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Country country) {
         Country existingCountry = countryService.findById(id)
@@ -56,5 +70,13 @@ public class CountryController {
 
         countryService.delete(id);
         return ResponseEntity.ok(country);
+    }
+
+    public ResponseEntity<?> Validation(BindingResult result) {
+        Map<String, String> errors = new HashMap<>();
+        result.getFieldErrors().forEach(err -> {
+            errors.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
+        });
+        return ResponseEntity.badRequest().body(errors);
     }
 }
